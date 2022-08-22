@@ -45,7 +45,7 @@ jobs:
           file: ./Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
-          tags: vpolaris/isc-dhcpd:8.2204.0-2.fc36
+          tags: vpolaris/rsyslog:8.2204.0-2.fc36
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       -
