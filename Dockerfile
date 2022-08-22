@@ -41,9 +41,11 @@ RUN ARCH="$(uname -m)" \
  
  RUN chroot ${sysroot} chmod u+x  /etc/rc.d/init.d/rsyslog.service /bin/entrypoint.sh
  
- #clean up
+#clean up
 RUN dnf -y --installroot=${sysroot} ${DNFOPTION} --releasever ${DISTVERSION} remove shadow-utils \
-    && dnf -y --installroot=${sysroot} ${DNFOPTION} --releasever ${DISTVERSION} remove util-linux-core --skip-broken
+    && cp ${sysroot}/usr/bin/logger /root/ \
+    && dnf -y --installroot=${sysroot} ${DNFOPTION} --releasever ${DISTVERSION} remove util-linux-core --skip-broken \
+    && mv /root/logger ${sysroot}/usr/bin/
     
 RUN ARCH="$(uname -m)" \
     && INITRPM="$(ls initscripts*${arch}.rpm)" \
