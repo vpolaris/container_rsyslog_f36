@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 function start() {
   ServerList="rsyslog isc-dhcpd glass-gui"
@@ -19,6 +19,7 @@ function stop() {
       /etc/rc.d/init.d/${server}.service stop 
     fi
   done
+}
 
 function stay_alive(){
  exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
@@ -43,12 +44,16 @@ then
 fi
 
 case "$1" in
-  start)    function_exists start && start
-          ;;
-  stop)  function_exists stop && stop
-          ;;
-  restart)  function_exists restart && restart
-          ;;  
-  *)      printf "Invalid command - Valid->start|stop|restart\n"
-          ;;
+  start)
+    function_exists start && start
+    ;;
+  stop)
+    function_exists stop && stop
+    ;;
+  restart)
+    function_exists restart && restart
+    ;;  
+  *)      
+    printf "Invalid command - Valid->start|stop|restart\n"
+    ;;
 esac
