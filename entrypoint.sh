@@ -1,28 +1,34 @@
-#!/bin/sh
+#!/bin/bash
 
 function start() {
-  ServerList="rsyslog isc-dhcpd glass-gui"
-  for server in ${ServerList}; do
-    if [ -f /etc/rc.d/init.d/${server}.service ]; then
-      /etc/rc.d/init.d/${server}.service start 
-    fi
-  done
-  if [[ "$(pgrep -f 'sleep infinity'>/dev/null;echo $?)" -eq "1" ]];then  
-    stay_alive
+  if [ -f /etc/rc.d/init.d/rsyslog.service ]; then
+    /etc/rc.d/init.d/rsyslog.service start 
   fi
+  if [ -f /etc/rc.d/init.d/isc-dhcpd.service ]; then
+    /etc/rc.d/init.d/isc-dhcpd.service start
+  fi
+  if [ -f /etc/rc.d/init.d/glass-gui.service ]; then
+    /etc/rc.d/init.d/glass-gui.service start &
+  fi   
+  if ! [ -f /tmp/alive ]; then stay_alive; fi
  }
 
 function stop() {
-  ServerList="glass-gui isc-dhcpd rsyslog"
-  for server in ${ServerList}; do
-    if [ -f /etc/rc.d/init.d/${server}.service ]; then
-      /etc/rc.d/init.d/${server}.service stop 
-    fi
-  done
-}
+  if [ -f /etc/rc.d/init.d/rsyslog.service ]; then
+    /etc/rc.d/init.d/rsyslog.service stop 
+  fi
+  if [ -f /etc/rc.d/init.d/isc-dhcpd.service ]; then
+    /etc/rc.d/init.d/isc-dhcpd.service stop
+  fi
+  if [ -f /etc/rc.d/init.d/glass-gui.service ]; then
+    /etc/rc.d/init.d/glass-gui.service stop 
+  fi 
+ }
 
 function stay_alive(){
+ touch /tmp/alive
  exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
+ 
 }
 
 function restart() {
@@ -44,16 +50,12 @@ then
 fi
 
 case "$1" in
-  start)
-    function_exists start && start
-    ;;
-  stop)
-    function_exists stop && stop
-    ;;
-  restart)
-    function_exists restart && restart
-    ;;  
-  *)      
-    printf "Invalid command - Valid->start|stop|restart\n"
-    ;;
+  start)    function_exists start && start
+          ;;
+  stop)  function_exists stop && stop
+          ;;
+  restart)  function_exists restart && restart
+          ;;  
+  *)      printf "Invalid command - Valid->start|stop|restart|reload\n"
+          ;;
 esac
